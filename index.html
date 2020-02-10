@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>窗口移动</title>
+	<link rel="stylesheet" type="text/css" href="./style.css">
+	<script type="text/javascript" src="vue.js"></script>
+</head>
+<body>
+	<div id="app">
+    <div class="title">
+      <h1 @click="isLogin=true">点击进行登录</h1>
+    </div>
+    <div class="login" v-show="isLogin" ref="login">
+      <div class="login-title">
+        <h3 @mousedown="startMove">登录窗口</h3>
+      </div>
+      <div class="login-content">
+        <div class="username">账号：<input type="text"></input></div>
+        <div class="password">密码：<input type="password"></input></div>
+        <div class="footer">
+          <button>登录</button>
+          <button @click="isLogin=false">取消</button>
+        </div>
+      </div>
+    </div>
+    <div class="bgMask" v-show="isLogin">
+    </div>
+  </div>
+  <script>
+    const Vm = new Vue({
+      el: '#app',
+      data: {
+        isLogin: false
+      },
+      methods: {
+        startMove(e){ // 鼠标按下
+          if(e.button === 0){ // 鼠标左键按下
+            let x = e.pageX - this.$refs.login.offsetLeft - 300;  // 鼠标与窗口边框距离
+            let y = e.pageY - this.$refs.login.offsetTop - 150;
+            let maxW = window.innerWidth; // 最大拖动位置（不能拖离页面可视区）
+            let maxH = window.innerHeight;
+            document.onmousemove = (e)=>{ // 鼠标移动
+              let loginX = e.pageX;
+              let loginY = e.pageY;
+              if(loginX < 0) loginX = 0;  
+              if(loginX > maxW) loginX = maxW;
+              if(loginY < 0) loginY = 0;
+              if(loginY > maxH) loginY = maxH;
+              this.$refs.login.style.left = loginX - x + 'px';  // 设置窗口位置，跟随鼠标移动
+              this.$refs.login.style.top = loginY - y + 'px';
+            }
+            document.onmouseup = (el) => {  // 鼠标抬起，清除鼠标移动事件
+              document.onmousemove = null;
+            }
+          }
+        }
+      },
+    })
+  </script>
+</body>
+</html>
